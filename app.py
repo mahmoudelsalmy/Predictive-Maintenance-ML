@@ -473,7 +473,7 @@ def show_batch_prediction(model, scaler, pca, label_encoder, metadata):
             with st.expander("👁️ Preview Uploaded Data"):
                 st.dataframe(df.head(10))
             
-            if st.button("🚀 Predict All    Equipment", type="primary", width="stretch"):
+            if st.button("🚀 Predict All    Equipment", type="primary"):
                 with st.spinner("Making predictions..."):
 
                     SENSORS = ["a1", "a2", "a3", "a4"]
@@ -525,7 +525,7 @@ def show_batch_prediction(model, scaler, pca, label_encoder, metadata):
                     })
 
                     st.success("✅ Prediction completed!")
-                    st.dataframe(results_df.head(20), width="stretch")
+                    st.dataframe(results_df.head(20))
 
                     # Summary
                     class_counts = results_df["Predicted_Condition"].value_counts()
@@ -542,7 +542,7 @@ def show_batch_prediction(model, scaler, pca, label_encoder, metadata):
                         names=class_counts.index,
                         title="Condition Distribution"
                     )
-                    st.plotly_chart(fig, width="stretch")
+                    st.plotly_chart(fig)
 
         
         except Exception as e:
@@ -722,3 +722,4 @@ def show_history():
 if __name__ == "__main__":
 
     main()
+
