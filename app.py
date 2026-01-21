@@ -214,7 +214,8 @@ def main():
             ["🔍 Single Prediction",
             "📁 Batch Prediction",
             "📊 History",
-            "📈 PCA Visualization"],
+            #"📈 PCA Visualization"
+            ],
             label_visibility="collapsed"
         )
         
@@ -548,103 +549,104 @@ def show_batch_prediction(model, scaler, pca, label_encoder, metadata):
         except Exception as e:
             st.error(f"❌ Error processing file: {str(e)}")
             
-def show_pca_visualization(scaler, pca, label_encoder):
-    st.header("📈 PCA Visualization")
-    st.write(
-        "This visualization shows the dataset projected onto two principal components "
-        "(PC1 and PC2) to illustrate class separability."
-    )
+# def show_pca_visualization(scaler, pca, label_encoder):
+#     st.header("📈 PCA Visualization")
+#     st.write(
+#         "This visualization shows the dataset projected onto two principal components "
+#         "(PC1 and PC2) to illustrate class separability."
+#     )
 
-    # Load original data
-    df_healthy = pd.read_csv("Data/fullHealthy.csv")
-    df_broken = pd.read_csv("Data/fullBroken.csv")
+#     # Load original data
+#     df_healthy = pd.read_csv("Data/fullHealthy.csv")
+#     df_broken = pd.read_csv("Data/fullBroken.csv")
 
-    df_healthy["label"] = 0
-    df_broken["label"] = 1
+#     df_healthy["label"] = 0
+#     df_broken["label"] = 1
 
-    df = pd.concat([df_healthy, df_broken], ignore_index=True)
+#     df = pd.concat([df_healthy, df_broken], ignore_index=True)
 
-    FEATURES = ["a1", "a2", "a3", "a4"]
-    df = df[FEATURES + ["label"]]
-    df[FEATURES] = df[FEATURES].apply(pd.to_numeric, errors="coerce")
-    df.dropna(inplace=True)
+#     FEATURES = ["a1", "a2", "a3", "a4"]
+#     df = df[FEATURES + ["label"]]
+#     df[FEATURES] = df[FEATURES].apply(pd.to_numeric, errors="coerce")
+#     df.dropna(inplace=True)
 
-    # Sample for performance
-    df = df.sample(n=5000, random_state=42)
+#     # Sample for performance
+#     df = df.sample(n=5000, random_state=42)
 
-    # -------- Helper functions --------
-    def extract_features(window):
-        feats = [
-            np.mean(window),
-            np.std(window),
-            np.sqrt(np.mean(window**2)),
-            np.min(window),
-            np.max(window),
-            skew(window),
-            kurtosis(window)
-        ]
-        return np.nan_to_num(feats)
+#     # -------- Helper functions --------
+#     def extract_features(window):
+#         feats = [
+#             np.mean(window),
+#             np.std(window),
+#             np.sqrt(np.mean(window**2)),
+#             np.min(window),
+#             np.max(window),
+#             skew(window),
+#             kurtosis(window)
+#         ]
+#         return np.nan_to_num(feats)
 
-    def create_windows(signal, window_size=256, step=256):
-        return [
-            signal[i:i+window_size]
-            for i in range(0, len(signal) - window_size, step)
-        ]
+#     def create_windows(signal, window_size=256, step=256):
+#         return [
+#             signal[i:i+window_size]
+#             for i in range(0, len(signal) - window_size, step)
+#         ]
 
-    # -------- Feature extraction --------
-    X_features = []
-    y_labels = []
+#     # -------- Feature extraction --------
+#     X_features = []
+#     y_labels = []
 
-    for label, group in df.groupby("label"):
-        sensor_windows = []
-        for col in FEATURES:
-            sensor_windows.append(create_windows(group[col].values))
+#     for label, group in df.groupby("label"):
+#         sensor_windows = []
+#         for col in FEATURES:
+#             sensor_windows.append(create_windows(group[col].values))
 
-        num_windows = min(len(w) for w in sensor_windows)
+#         num_windows = min(len(w) for w in sensor_windows)
 
-        for i in range(num_windows):
-            feats = []
-            for sw in sensor_windows:
-                feats.extend(extract_features(sw[i]))
-            X_features.append(feats)
-            y_labels.append(label)
+#         for i in range(num_windows):
+#             feats = []
+#             for sw in sensor_windows:
+#                 feats.extend(extract_features(sw[i]))
+#             X_features.append(feats)
+#             y_labels.append(label)
 
-    X_features = np.array(X_features)
-    y_labels = np.array(y_labels)
+#     X_features = np.array(X_features)
+#     y_labels = np.array(y_labels)
 
-    # Apply trained pipeline
-    X_scaled = scaler.transform(X_features)
-    X_pca = pca.transform(X_scaled)
+#     # Apply trained pipeline
+#     X_scaled = scaler.transform(X_features)
+#     X_pca = pca.transform(X_scaled)
 
-    # Prepare DataFrame for plotting
-    pca_df = pd.DataFrame({
-        "PC1": X_pca[:, 0],
-        "PC2": X_pca[:, 1],
-        "Condition": y_labels
-    })
+#     # Prepare DataFrame for plotting
+#     pca_df = pd.DataFrame({
+#         "PC1": X_pca[:, 0],
+#         "PC2": X_pca[:, 1],
+#         "Condition": y_labels
+#     })
 
-    pca_df["Condition"] = pca_df["Condition"].map({
-        0: "Healthy",
-        1: "Faulty"
-    })
+#     pca_df["Condition"] = pca_df["Condition"].map({
+#         0: "Healthy",
+#         1: "Faulty"
+#     })
 
-    # Plot
-    fig = px.scatter(
-        pca_df,
-        x="PC1",
-        y="PC2",
-        color="Condition",
-        title="PCA Projection of Gearbox Data",
-        opacity=0.7
-    )
+#     # Plot
+#     fig = px.scatter(
+#         pca_df,
+#         x="PC1",
+#         y="PC2",
+#         color="Condition",
+#         title="PCA Projection of Gearbox Data",
+#         opacity=0.7
+#     )
 
-    fig.update_layout(
-        paper_bgcolor='rgba(30, 41, 59, 0.5)',
-        plot_bgcolor='rgba(30, 41, 59, 0.5)',
-        font={'color': "#f1f5f9"}
-    )
+#     fig.update_layout(
+#         paper_bgcolor='rgba(30, 41, 59, 0.5)',
+#         plot_bgcolor='rgba(30, 41, 59, 0.5)',
+#         font={'color': "#f1f5f9"}
+#     )
 
-    st.plotly_chart(fig, use_container_width=True)
+#     st.plotly_chart(fig, use_container_width=True)
+
 def show_history():
     st.header("📊 Prediction History")
     
@@ -722,4 +724,5 @@ def show_history():
 if __name__ == "__main__":
 
     main()
+
 
