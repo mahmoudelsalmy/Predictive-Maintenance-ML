@@ -453,7 +453,6 @@ def show_batch_prediction(model, scaler, pca, label_encoder, metadata):
             csv,
             "sample_template.csv",
             "text/csv",
-            width="stretch"
         )
         
     
@@ -721,4 +720,5 @@ def show_history():
     )
 
 if __name__ == "__main__":
+
     main()
