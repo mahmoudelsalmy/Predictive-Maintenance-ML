@@ -25,6 +25,15 @@ This system:
 
 ---
 
+## 🖼️ Screenshots
+
+
+### 📊 Dashboard
+<img width="1274" height="704" alt="image" src="https://github.com/user-attachments/assets/02822a11-f8dd-48ad-b0cc-acb77b5de8b2" />
+ 
+
+
+
 ## 🛠️ Tech Stack
 
 - **Python 3.11**
